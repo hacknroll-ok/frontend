@@ -2,6 +2,7 @@ import StartPage from "./components/StartPage"
 import NewGame from "./components/NewGame"
 import JoinGame from "./components/JoinGame"
 import GameScreen from "./components/GameScreen"
+import EnterName from "./components/EnterName"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 export default function App() {
@@ -9,9 +10,10 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/" element={<StartPage />} />
-        <Route path="/NewGame" element={<NewGame />} />
-        <Route path="/JoinGame" element={<JoinGame />} />
-        <Route path="/GameScreen" element={<GameScreen />} />
+        <Route path="/newGame" element={<NewGame />} />
+        <Route path="/joinGame" element={<JoinGame />} />
+        <Route path="/enterName" element={<EnterName />} />
+        <Route path="/game" element={<GameScreen />} />
       </Routes>
     </Router>
    );

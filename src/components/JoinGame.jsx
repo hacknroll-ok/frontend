@@ -21,7 +21,7 @@ export default function JoinGame() {
                 </CardHeader>
                 <CardBody className="flex flex-col gap-4 justify-center w-full">
                     <Input size="lg" label="Enter Room Number" />
-                    <a href="/JoinGame" className="flex justify-center">
+                    <a href="/enterName" className="flex justify-center">
                         <Button size="md" color="white" className="border-2 border-black"> Join </Button>
                     </a>
                 </CardBody>

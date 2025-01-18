@@ -6,6 +6,7 @@ import {
   } from "@material-tailwind/react";
   import DrawingCanvas from "./DrawingCanvas";
   import React from "react";
+  import GameService from "../services/GameService";
   
   
   const PlayerList = ({ players }) => (
@@ -30,12 +31,13 @@ import {
       { name: "Player 4", points: 0 },
       { name: "Player 5", points: 0 },
     ])
-  
+
     const [guess, setGuess] = React.useState("")
   
-    const handleGuessSubmit = (e) => {
+    const handleGuessSubmit = async (e) => {
       e.preventDefault()
       console.log("Submitted guess:", guess)
+      GameService.sendGuess(1, guess)
       setGuess("")
       // Here you would typically handle the guess submission logic
     }

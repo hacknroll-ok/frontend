@@ -18,10 +18,10 @@ export default function StartPage() {
                     <Typography variant="h3" color="white"> Game Name </Typography>
                 </CardHeader>
                 <CardBody className="flex gap-8 justify-between">
-                    <a href="/NewGame">
+                    <a href="/newGame">
                         <Button size="lg" color="white" className="border-2 border-blue-400"> Create New Game</Button>
                     </a>
-                    <a href="/JoinGame">
+                    <a href="/joinGame">
                         <Button size="lg" color="white" className="border-2 border-red-400"> Join Game</Button>
                     </a>
                 </CardBody>

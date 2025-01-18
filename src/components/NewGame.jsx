@@ -41,7 +41,7 @@ export default function NewGame() {
             label="Enter Room Number"
             onChange={(e) => handleRoomNumber(e)}
           />
-          <a href="/JoinGame" className="flex justify-center">
+          <a href="/enterName" className="flex justify-center">
             <Button size="md" color="white" className="border-2 border-black" onClick={() => submitRoomNumber()}> Create</Button>
           </a>
         </CardBody>
