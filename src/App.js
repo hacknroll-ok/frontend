@@ -9,7 +9,7 @@ export default function App() {
    return (
     <Router>
       <Routes>
-        <Route path="/" element={<StartPage />} />
+        <Route path="/" element={<EnterName />} />
         <Route path="/newGame" element={<NewGame />} />
         <Route path="/joinGame" element={<JoinGame />} />
         <Route path="/enterName" element={<EnterName />} />
