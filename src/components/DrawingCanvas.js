@@ -92,11 +92,6 @@ const DrawingCanvas = ({ players, setPlayers, playerIndex,  setRoundNumber, setI
 
     // Save the WebSocket instance in state
     setWebSocket(ws);
-
-    // Cleanup the WebSocket connection on unmount
-    return () => {
-      ws.close();
-    };
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
   useEffect(() => {
@@ -126,23 +121,24 @@ const DrawingCanvas = ({ players, setPlayers, playerIndex,  setRoundNumber, setI
   };
 
   const draw = ({ nativeEvent }) => {
-  if (!isDrawing) return;
+    if (!isDrawing) return;
 
-  const { offsetX, offsetY } = nativeEvent;
+    const { offsetX, offsetY } = nativeEvent;
 
-  // Draw locally
-  contextRef.current.lineTo(offsetX, offsetY);
-  contextRef.current.stroke();
+    // Draw locally
+    contextRef.current.lineTo(offsetX, offsetY);
+    contextRef.current.stroke();
 
   // Send drawing data to WebSocket
-  if (webSocket && webSocket.readyState === WebSocket.OPEN) {
-    webSocket.send(JSON.stringify({
-      type: "drawing",
-      x: offsetX,
-      y: offsetY
-    }));
-  }
-};
+  // if (webSocket && webSocket.readyState === WebSocket.OPEN) {
+  //     webSocket.send(JSON.stringify({
+  //       type: "drawing",
+  //       x: offsetX,
+  //       y: offsetY
+  //     }));
+  //   };
+  };
+
 
 
   const stopDrawing = () => {
