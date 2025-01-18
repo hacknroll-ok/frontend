@@ -5,7 +5,7 @@ import {
     Card
   } from "@material-tailwind/react";
   import DrawingCanvas from "./DrawingCanvas";
-  import React from "react";
+  import React, { useEffect } from "react";
   import GameService from "../services/GameService";
   
   
@@ -41,7 +41,7 @@ import {
       setGuess("")
       // Here you would typically handle the guess submission logic
     }
-  
+    
   
     return (
       <div className="h-screen flex flex-col p-4 bg-gray-100">

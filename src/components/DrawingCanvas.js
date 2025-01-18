@@ -1,12 +1,41 @@
 import React, { useRef, useState, useEffect } from 'react';
-import {
-  Button
-} from "@material-tailwind/react";
+import { Button } from "@material-tailwind/react";
 
 const DrawingCanvas = () => {
   const canvasRef = useRef(null);
   const contextRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [webSocket, setWebSocket] = useState(null); // State to hold WebSocket instance
+
+  useEffect(() => {
+    // Initialize WebSocket connection
+    const ws = new WebSocket('ws://127.0.0.1:8000/ws');
+
+    // WebSocket event handlers
+    ws.onopen = () => {
+      console.log("WebSocket connection established.");
+    };
+
+    ws.onmessage = (event) => {
+      console.log("Message received from server:", event.data);
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket connection closed.");
+    };
+
+    // Save the WebSocket instance in state
+    setWebSocket(ws);
+
+    // Cleanup the WebSocket connection on unmount
+    return () => {
+      ws.close();
+    };
+  }, []); // Empty dependency array ensures this runs only once when the component mounts
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -53,33 +82,43 @@ const DrawingCanvas = () => {
   };
 
   const saveDrawing = () => {
-    const canvas = canvasRef.current;
-    const dataURL = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.href = dataURL;
-    link.download = 'drawing.png';
-    link.click();
-  };
+    // Ensure the WebSocket connection is open
+    if (!webSocket || webSocket.readyState !== WebSocket.OPEN) {
+      console.error("WebSocket connection is not open.");
+      return;
+    }
 
+    // Get the canvas reference
+    const canvas = canvasRef.current;
+
+    // Convert the canvas to a blob and send it over WebSocket
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        console.error("Failed to convert canvas to blob.");
+        return;
+      }
+
+      webSocket.send(blob); // Send the blob data
+      console.log("Canvas image sent over WebSocket!");
+    }, "image/png");
+  };
 
   return (
     <div>
-        <canvas
+      <canvas
         ref={canvasRef}
         style={{ border: '1px solid black', cursor: 'crosshair' }}
         onMouseDown={startDrawing}
         onMouseMove={draw}
         onMouseUp={stopDrawing}
         onMouseLeave={stopDrawing}
-        />
+      />
 
-        <div className="flex gap-12 my-8 justify-center items-center">
-            <Button size="lg" color="red" onClick={clearCanvas}>Clear</Button>
-            <Button size="lg" color="green" onClick={saveDrawing}>Save</Button>
-        </div>
+      <div className="flex gap-12 my-8 justify-center items-center">
+        <Button size="lg" color="red" onClick={clearCanvas}>Clear</Button>
+        <Button size="lg" color="green" onClick={saveDrawing}>Save</Button>
+      </div>
     </div>
-    
-
   );
 };
 
