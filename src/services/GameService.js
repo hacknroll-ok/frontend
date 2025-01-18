@@ -4,7 +4,7 @@ const baseURL = "/game";
 
 class GameService {
 
-    async sendGuess(playerID, guess) {
+    async guessCorrect(playerID, guess) {
         return await API.post(`${baseURL}`, playerID,  guess);
       }
 }

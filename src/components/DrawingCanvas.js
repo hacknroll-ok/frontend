@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Button } from "@material-tailwind/react";
 
-const DrawingCanvas = () => {
+const DrawingCanvas = ({ players, setPlayers, playerIndex,  setRoundNumber, setIsMyTurn, setSubject }) => {
   const canvasRef = useRef(null);
   const contextRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -18,6 +18,33 @@ const DrawingCanvas = () => {
 
     ws.onmessage = (event) => {
       console.log("Message received from server:", event.data);
+      // If event.data == Blob --> binary --> image
+      if (event.data instanceof Blob) {
+        const canvas = canvasRef.current;
+        const context = canvas.getContext('2d');
+        const image = new Image();
+        image.onload = () => {
+          context.drawImage(image, 0, 0);
+        };
+        image.src = URL.createObjectURL(event.data);
+      }
+      // If event.data == array --> new player has joined --> update players
+      else if (Array.isArray(event.data)) {
+        setPlayers(event.data)
+      }
+      // If event.data == JSON --> New Turn message
+      // Set New Turn Flag
+      // Check if myTurn
+      else if (event.data === 'object') {
+        setPlayers(event.data.players)
+        setRoundNumber(event.data.round)
+        setSubject(event.data.subject)
+        if (players[playerIndex] !== sessionStorage.getItem("id")) {
+          setIsMyTurn(false)
+        } else {
+          setIsMyTurn(true)
+        }
+      }
     };
 
     ws.onerror = (error) => {

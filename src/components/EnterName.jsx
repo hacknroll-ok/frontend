@@ -20,7 +20,7 @@ export default function EnterPage() {
         e.preventDefault()
         try { 
             console.log("Submitted name:", name)
-            const response = await UserService.sendName(name)
+            const response = await UserService.sendName({"name": name})
             setError(false)
 // Set user id in session storage
             sessionStorage.setItem("id", response.data.id)
