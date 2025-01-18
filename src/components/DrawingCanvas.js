@@ -18,8 +18,8 @@ const DrawingCanvas = ({ players, setPlayers, playerIndex,  setRoundNumber, setI
 
     ws.onmessage = (event) => {
       console.log("Message received from server:", event.data);
-      console.log("Type of event.data:", typeof event.data)
-      // If event.data == Blob --> binary --> image
+    
+      // If the message is a Blob (image data), render it on the canvas
       if (event.data instanceof Blob) {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
@@ -28,26 +28,59 @@ const DrawingCanvas = ({ players, setPlayers, playerIndex,  setRoundNumber, setI
           context.drawImage(image, 0, 0);
         };
         image.src = URL.createObjectURL(event.data);
+        return; // Exit since it's not related to players or turns
       }
-      // If event.data == array --> new player has joined --> update players
-      else if (typeof event.data === 'string') {
-        console.log("In New Player Joined");
-        setPlayers(JSON.parse(event.data))
-      }
-      // If event.data == JSON --> New Turn message
-      // Set New Turn Flag
-      // Check if myTurn
-      else if (event.data === 'object') {
-        setPlayers(event.data.players)
-        setRoundNumber(event.data.round)
-        setSubject(event.data.subject)
-        if (players[playerIndex] !== sessionStorage.getItem("id")) {
-          setIsMyTurn(false)
+    
+      try {
+        // Attempt to parse the message as JSON
+        const message = JSON.parse(event.data);
+        console.log("Parsed message:", message);
+
+        if (message.type === "drawing") {
+          // Render the drawing event on this client's canvas
+          contextRef.current.lineTo(message.x, message.y);
+          contextRef.current.stroke();
+        }
+      
+        if (Array.isArray(message)) {
+          console.log("Players array received:", message);
+          setPlayers(message); // Update the players array directly
+        } else if (message.type === "newTurn" || (message.round >=0 && message.playerDrawing !== undefined && message.drawingSubject)) {
+          console.log("New turn message:", message);
+      
+          setRoundNumber(message.round);
+          setSubject(message.drawingSubject);
+          
+          
+          const isCurrentPlayerTurn = message.playerDrawing === parseInt(sessionStorage.getItem("id"), 10);
+          setIsMyTurn(isCurrentPlayerTurn);
+      
+          console.log(`Round ${message.round} started. Drawing subject: ${message.drawingSubject}.`);
+          console.log(`Is it my turn to draw? ${isCurrentPlayerTurn}`);
         } else {
-          setIsMyTurn(true)
+          console.warn("Unhandled message type or format:", message);
+        }
+      } catch (e) {
+        console.error("Error parsing WebSocket message:", e);
+      
+        // Handle non-JSON messages
+        if (typeof event.data === "string") {
+          console.log("Non-JSON message received:", event.data);
+      
+          // Example: Handle "Prediction: snake" messages
+          if (event.data.startsWith("Prediction:")) {
+            const prediction = event.data.replace("Prediction:", "").trim();
+            console.log(`AI predicted the drawing as: ${prediction}`);
+            // Add your custom logic for handling predictions here
+          } else {
+            console.warn("Unhandled string message:", event.data);
+          }
         }
       }
+      
+      
     };
+    
 
     ws.onerror = (error) => {
       console.error("WebSocket error:", error);
@@ -93,11 +126,24 @@ const DrawingCanvas = ({ players, setPlayers, playerIndex,  setRoundNumber, setI
   };
 
   const draw = ({ nativeEvent }) => {
-    if (!isDrawing) return;
-    const { offsetX, offsetY } = nativeEvent;
-    contextRef.current.lineTo(offsetX, offsetY);
-    contextRef.current.stroke();
-  };
+  if (!isDrawing) return;
+
+  const { offsetX, offsetY } = nativeEvent;
+
+  // Draw locally
+  contextRef.current.lineTo(offsetX, offsetY);
+  contextRef.current.stroke();
+
+  // Send drawing data to WebSocket
+  if (webSocket && webSocket.readyState === WebSocket.OPEN) {
+    webSocket.send(JSON.stringify({
+      type: "drawing",
+      x: offsetX,
+      y: offsetY
+    }));
+  }
+};
+
 
   const stopDrawing = () => {
     contextRef.current.closePath();

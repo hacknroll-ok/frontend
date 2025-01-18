@@ -26,6 +26,7 @@ export default function GameScreen() {
 
   const [roundNumber, setRoundNumber] = React.useState(1)
   const [players, setPlayers] = React.useState([])
+  console.log("Players:", players)
 
   const [guess, setGuess] = React.useState("")
   const [isMyTurn, setIsMyTurn] = React.useState(false)
@@ -69,6 +70,9 @@ export default function GameScreen() {
       {/* Round Number - Top */}
       <div className="text-center text-2xl font-bold mb-4">
         Round {roundNumber} of 5
+      </div>  
+      <div className="text-center mb-4">
+        {isMyTurn ? `Your Turn! Draw a ${subject}` : "Guess the Drawing!"}
       </div>
 
       {/* Middle Section */}

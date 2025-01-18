@@ -22,8 +22,9 @@ export default function EnterPage() {
             console.log("Submitted name:", name)
             const response = await UserService.sendName({"name": name})
             setError(false)
-// Set user id in session storage
-            sessionStorage.setItem("id", response.data.id)
+            // Set user id in session storage
+            console.log("User ID:", response.data)
+            sessionStorage.setItem("id", response.data.userId)
             navigate("/game")
 
 
