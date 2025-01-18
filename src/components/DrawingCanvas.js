@@ -1,4 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
+import {
+  Button
+} from "@material-tailwind/react";
 
 const DrawingCanvas = () => {
   const canvasRef = useRef(null);
@@ -7,10 +10,14 @@ const DrawingCanvas = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    canvas.width = window.innerWidth * 2;
-    canvas.height = window.innerHeight * 2;
-    canvas.style.width = `${window.innerWidth}px`;
-    canvas.style.height = `${window.innerHeight}px`;
+    const parentDiv = canvas.parentElement;
+    const width = parentDiv.offsetWidth;
+    const height = window.innerHeight * (7 / 10);
+
+    canvas.width = width * 2;
+    canvas.height = height * 2;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
 
     const context = canvas.getContext('2d');
     context.scale(2, 2);
@@ -54,8 +61,6 @@ const DrawingCanvas = () => {
     link.click();
   };
 
-  
-  
 
   return (
     <div>
@@ -68,9 +73,9 @@ const DrawingCanvas = () => {
         onMouseLeave={stopDrawing}
         />
 
-        <div style={{ textAlign: 'center', marginBottom: '10px' }}>
-            <button onClick={clearCanvas}>Clear</button>
-            <button onClick={saveDrawing}>Save</button>
+        <div className="flex gap-12 my-8 justify-center items-center">
+            <Button size="lg" color="red" onClick={clearCanvas}>Clear</Button>
+            <Button size="lg" color="green" onClick={saveDrawing}>Save</Button>
         </div>
     </div>
     
