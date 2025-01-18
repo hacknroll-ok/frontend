@@ -18,6 +18,7 @@ const DrawingCanvas = ({ players, setPlayers, playerIndex,  setRoundNumber, setI
 
     ws.onmessage = (event) => {
       console.log("Message received from server:", event.data);
+      console.log("Type of event.data:", typeof event.data)
       // If event.data == Blob --> binary --> image
       if (event.data instanceof Blob) {
         const canvas = canvasRef.current;
@@ -29,8 +30,9 @@ const DrawingCanvas = ({ players, setPlayers, playerIndex,  setRoundNumber, setI
         image.src = URL.createObjectURL(event.data);
       }
       // If event.data == array --> new player has joined --> update players
-      else if (Array.isArray(event.data)) {
-        setPlayers(event.data)
+      else if (typeof event.data === 'string') {
+        console.log("In New Player Joined");
+        setPlayers(JSON.parse(event.data))
       }
       // If event.data == JSON --> New Turn message
       // Set New Turn Flag

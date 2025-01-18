@@ -15,7 +15,7 @@ const PlayerList = ({ players }) => (
     {players.map((player, index) => (
       <div key={index} className="flex justify-between">
         <span className="text-lg">{player.name}</span>
-        <span className="text-lg">{player.points} pts</span>
+        <span className="text-lg">{player.score} pts</span>
       </div>
     ))}
   </div>
@@ -39,6 +39,9 @@ export default function GameScreen() {
 
   // Get player index in player[]
   const playerIndex = players.length - 1
+  
+  useEffect(() => {
+  }, [players])
 
   const handleGuessSubmit = async (e) => {
     e.preventDefault()
