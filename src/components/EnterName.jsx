@@ -43,7 +43,7 @@ export default function EnterPage() {
                     color="blue"
                     className="mb-4 grid h-28 place-items-center"
                 >
-                    <Typography variant="h3" color="white"> Scibble Animals </Typography>
+                    <Typography variant="h3" color="white"> Scribble Animals </Typography>
                 </CardHeader>
                 <CardBody>
                     <Input label="Enter Your Name" size="lg" value={name} onChange={(e) => setName(e.target.value)} />
