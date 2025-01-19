@@ -44,7 +44,7 @@ export default function GameScreen() {
 
   // Get player index in player[]
   const playerIndex = players.length - 1
-  
+
   useEffect(() => {
   }, [players])
 
@@ -86,7 +86,7 @@ export default function GameScreen() {
       {/* Round Number - Top */}
       <div className="text-center text-2xl font-bold mb-4">
         Round {roundNumber} of 5
-      </div>  
+      </div>
       <div className="text-center mb-4">
         {isMyTurn ? `Your Turn! Draw a ${subject}` : "Guess the Drawing!"}
       </div>
@@ -97,6 +97,11 @@ export default function GameScreen() {
         <div className="w-1/4 min-w-40 bg-white p-4 rounded-lg shadow">
           <h2 className="text-2xl font-semibold mb-4">Players</h2>
           <PlayerList players={players} />
+          <h2 className="text-2xl font-semibold mt-10 mb-4">AI Prediction</h2>
+          <div className="flex justify-between">
+            <span className="text-lg">AI</span>
+            <span className="text-lg">{prediction}</span>
+          </div>
         </div>
 
         {/* Canvas - Middle Right */}
