@@ -34,6 +34,8 @@ export default function GameScreen() {
   // AI Prediction of subject
   const [prediction, setPrediction] = React.useState("")
 
+  const [submittedGuess, setSubmittedGuess] = React.useState(false)
+
   // Set if alert for guess result is shown or not
   const [isAlert, setIsAlert] = React.useState(false)
   // 0 == incorrect, 1 == corevt + AI predicted same thing, 2 == correct + AI wrong
@@ -49,6 +51,7 @@ export default function GameScreen() {
   const handleGuessSubmit = async (e) => {
     e.preventDefault()
     console.log("Submitted guess:", guess)
+    setSubmittedGuess(true)
     // Check if submitted guess is correct
     if (guess === subject && prediction !== subject) {
       console.log("Correct guess! Point Awarded!")
@@ -107,12 +110,13 @@ export default function GameScreen() {
             setIsMyTurn={setIsMyTurn}
             setSubject={setSubject}
             setPrediction={setPrediction}
+            setSubmittedGuess={setSubmittedGuess}
           />
         </div>
       </div>
 
       {/* Guess Input - not myTurn and 1st time we submit */}
-      {!isMyTurn && !isAlert && guess === "" &&
+      {!isMyTurn && !isAlert && !submittedGuess &&
         <div className="flex gap-2 mt-4 items-center">
           <Input
             label="Enter Your Guess"

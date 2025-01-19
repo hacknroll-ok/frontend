@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Button } from "@material-tailwind/react";
 
-const DrawingCanvas = ({ players, setPlayers, playerIndex, setRoundNumber, isMyTurn, setIsMyTurn, setSubject, setPrediction }) => {
+const DrawingCanvas = ({ players, setPlayers, playerIndex, setRoundNumber, isMyTurn, setIsMyTurn, setSubject, setPrediction, setSubmittedGuess }) => {
   const canvasRef = useRef(null);
   const contextRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -50,10 +50,11 @@ const DrawingCanvas = ({ players, setPlayers, playerIndex, setRoundNumber, isMyT
 
           setRoundNumber(message.round);
           setSubject(message.drawingSubject);
-
+          setSubmittedGuess(false)
+          
           const isCurrentPlayerTurn = message.playerDrawing === parseInt(sessionStorage.getItem("id"), 10);
           setIsMyTurn(isCurrentPlayerTurn);
-
+          
           console.log(`Round ${message.round} started. Drawing subject: ${message.drawingSubject}.`);
           console.log(`Is it my turn to draw? ${isCurrentPlayerTurn}`);
         } else {
