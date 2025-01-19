@@ -7,7 +7,6 @@ import {
 import DrawingCanvas from "./DrawingCanvas";
 import React, { useEffect } from "react";
 import GameService from "../services/GameService";
-import UserService from "../services/UserService";
 
 
 const PlayerList = ({ players }) => (
@@ -32,10 +31,13 @@ export default function GameScreen() {
   const [isMyTurn, setIsMyTurn] = React.useState(false)
   // Drawing Subject if player's turn to draw
   const [subject, setSubject] = React.useState("")
+  // AI Prediction of subject
+  const [prediction, setPrediction] = React.useState("")
 
   // Set if alert for guess result is shown or not
   const [isAlert, setIsAlert] = React.useState(false)
-  const [guessResult, setGuessResult] = React.useState(false)
+  // 0 == incorrect, 1 == corevt + AI predicted same thing, 2 == correct + AI wrong
+  const [guessResult, setGuessResult] = React.useState(0)
 
 
   // Get player index in player[]
@@ -48,18 +50,29 @@ export default function GameScreen() {
     e.preventDefault()
     console.log("Submitted guess:", guess)
     // Check if submitted guess is correct
-    if (guess === subject) {
-      console.log("Correct guess!")
+    if (guess === subject && prediction !== subject) {
+      console.log("Correct guess! Point Awarded!")
       try {
-        await GameService.guessCorrect(sessionStorage.getItem("id"))
-        setGuessResult(true)
+        GameService.guessCorrect(sessionStorage.getItem("id"), true)
+        setGuessResult(2)
       } catch (e) {
         console.error("Error submitting guess:", e)
       }
     } else {
-      console.log("Incorrect guess!")
-      setGuessResult(false)
+      // AI also predicted correctly
+      if (guess === subject) {
+        setGuessResult(1)
+      } else {
+        setGuessResult(0)
+      }
+
+      try {
+        GameService.guessCorrect(sessionStorage.getItem("id"), false)
+      } catch (e) {
+        console.error("Error submitting guess:", e)
+      }
     }
+
     setIsAlert(true)
     setGuess("")
   }
@@ -90,14 +103,16 @@ export default function GameScreen() {
             setPlayers={setPlayers}
             playerIndex={playerIndex}
             setRoundNumber={setRoundNumber}
+            isMyTurn={isMyTurn}
             setIsMyTurn={setIsMyTurn}
             setSubject={setSubject}
+            setPrediction={setPrediction}
           />
         </div>
       </div>
 
-      {/* Guess Input - not myTurn */}
-      {!isMyTurn && !isAlert &&
+      {/* Guess Input - not myTurn and 1st time we submit */}
+      {!isMyTurn && !isAlert && guess === "" &&
         <div className="flex gap-2 mt-4 items-center">
           <Input
             label="Enter Your Guess"
@@ -107,14 +122,6 @@ export default function GameScreen() {
             className="flex-grow"
           />
           <Button size="lg" color="green" className="ml-10" onClick={handleGuessSubmit}>Submit</Button>
-        </div>}
-
-      {/* Guess Input - myTurn */}
-      {isMyTurn &&
-        <div className="flex gap-2 mt-4 items-center justify-center">
-          <Typography variant="h4" color="black">You are drawing:
-            <span className="text-red-500 underline">{subject}</span>
-          </Typography>
         </div>}
 
       {isAlert &&
@@ -131,7 +138,7 @@ export default function GameScreen() {
           <Typography
             variant="h6"
           >
-            {guessResult ? "Correct guess!" : "Incorrect guess!"}
+            {guessResult === 2 ? "Correct guess! Point awarded!" : (guessResult === 0 ? `Wrong Guess! Correct answer is ${subject}!` : `AI predicted ${subject} correctly`)}
           </Typography>
         </Alert>}
     </div>
