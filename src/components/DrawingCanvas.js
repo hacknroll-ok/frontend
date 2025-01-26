@@ -54,7 +54,6 @@ const DrawingCanvas = ({
         console.log("Parsed message:", message);
         console.log("type of parsed message", typeof message);
         console.log("message type:", message.type);
-        console.log("myTurn?", myTurn.current);
 
         if (Array.isArray(message)) {
           console.log("Players array received:", message);
@@ -84,6 +83,7 @@ const DrawingCanvas = ({
           let currentPlayerIndex = playersRef.current.findIndex(
             (player) => player.id === storedPlayerId
           );
+
           const isCurrentPlayerTurn =
             message.playerDrawing === currentPlayerIndex;
           console.log("current player index:", currentPlayerIndex);
@@ -91,6 +91,7 @@ const DrawingCanvas = ({
           //need set state and ref both hmm
           setIsMyTurn(isCurrentPlayerTurn);
           myTurn.current = isCurrentPlayerTurn;
+          console.log("myTurn?", myTurn.current);
 
           console.log(
             `Round ${message.round} started. Drawing subject: ${message.drawingSubject}.`
