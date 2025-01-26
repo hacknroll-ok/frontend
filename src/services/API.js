@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 let API = axios.create({
-  baseURL: "http://localhost:8000/api",
+  baseURL: "https://hacknroll-backend-rj4t.onrender.com/api",
   timeout: 10000,
 });
 
