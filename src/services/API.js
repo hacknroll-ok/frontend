@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 let API = axios.create({
   baseURL: "https://hacknroll-backend-rj4t.onrender.com/api",
@@ -6,12 +6,12 @@ let API = axios.create({
 });
 
 API.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
+  (response) => response,
+  (error) => {
+    if (error.code === "ECONNABORTED" && error.message.includes("timeout")) {
       error.response = {
         ...error.response,
-        data: 'Request timed out. Please try again later.',
+        data: "Request timed out. Please try again later.",
       };
     }
     return Promise.reject(error);

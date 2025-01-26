@@ -25,7 +25,9 @@ const DrawingCanvas = ({
   useEffect(() => {
     // Initialize WebSocket connection
     if (webSocket.current == null) {
-      webSocket.current = new WebSocket("ws://127.0.0.1:8000/ws");
+      webSocket.current = new WebSocket(
+        "wss://hacknroll-backend-rj4t.onrender.com/ws"
+      );
     }
 
     // WebSocket event handlers
