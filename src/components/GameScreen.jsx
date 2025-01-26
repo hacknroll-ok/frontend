@@ -46,48 +46,65 @@ export default function GameScreen() {
 
   useEffect(() => {}, [players]);
 
+  useEffect(() => {
+    setIsAlert(false);
+  }, [roundNumber]);
+
   const handleGuessSubmit = async (e) => {
     e.preventDefault();
     setDrawingMessage("Waiting for other players to submit their guess...");
     console.log("Submitted guess:", guess);
     setSubmittedGuess(true);
     // Check if submitted guess is correct
-    if (guess === subject && prediction !== subject) {
-      console.log("Correct guess! Point Awarded!");
+    // if person guess correctly and AI does not guess correctly
+    // if (guess === subject && prediction !== subject) {
+    //   console.log("Correct guess! Point Awarded!");
+    //   const roundTrackingObj = {
+    //     type: "roundTracking",
+    //     round: roundNumber,
+    //     playerId: sessionStorage.getItem("id"),
+    //     guess: "correct",
+    //   };
+    //   webSocket.current.send(JSON.stringify(roundTrackingObj));
+    // try {
+    //   GameService.guessCorrect(sessionStorage.getItem("id"), true);
+    //   setGuessResult(2);
+    // } catch (e) {
+    //   console.error("Error submitting guess:", e);
+    // }
+    // } else {
+    // if person guess incorrectly and AI guess correctly
+    if (guess === subject) {
       const roundTrackingObj = {
         type: "roundTracking",
         round: roundNumber,
         playerId: sessionStorage.getItem("id"),
         guess: "correct",
       };
+      setGuessResult(1);
       webSocket.current.send(JSON.stringify(roundTrackingObj));
-      // try {
-      //   GameService.guessCorrect(sessionStorage.getItem("id"), true);
-      //   setGuessResult(2);
-      // } catch (e) {
-      //   console.error("Error submitting guess:", e);
-      // }
-    } else {
-      // AI also predicted correctly
-      const roundTrackingObj = {
-        type: "roundTracking",
-        round: roundNumber,
-        playerId: sessionStorage.getItem("id"),
-        guess: "wrong",
-      };
-      webSocket.current.send(JSON.stringify(roundTrackingObj));
-      if (guess === subject) {
-        setGuessResult(1);
-      } else {
-        setGuessResult(0);
-      }
 
       // try {
       //   GameService.guessCorrect(sessionStorage.getItem("id"), false);
       // } catch (e) {
       //   console.error("Error submitting guess:", e);
       // }
+    } else {
+      const roundTrackingObj = {
+        type: "roundTracking",
+        round: roundNumber,
+        playerId: sessionStorage.getItem("id"),
+        guess: "wrong",
+      };
+      setGuessResult(0);
+      webSocket.current.send(JSON.stringify(roundTrackingObj));
     }
+
+    // if (guess === subject) {
+    //   setGuessResult(1);
+    // } else {
+    //   setGuessResult(0);
+    // }
 
     setIsAlert(true);
     setGuess("");
@@ -98,7 +115,7 @@ export default function GameScreen() {
     <div className="h-screen flex flex-col p-4 bg-gray-100">
       {/* Round Number - Top */}
       <div className="text-center text-2xl font-bold mb-4">
-        Round {roundNumber} of 5
+        Round {roundNumber} of {players.length}
       </div>
       <div className="text-center mb-4">
         {isMyTurn ? `Your Turn! Draw a ${subject}` : drawingMessage}
@@ -168,11 +185,12 @@ export default function GameScreen() {
           className="justify-center"
         >
           <Typography variant="h6">
-            {guessResult === 2
-              ? "Correct guess! Point awarded!"
+            {guessResult === 1
+              ? "You guessed the subject of the drawing correctly!"
               : guessResult === 0
               ? `Wrong Guess! Correct answer is ${subject}!`
-              : `AI predicted ${subject} correctly`}
+              : null}
+            {/*: `AI predicted ${subject} correctly`} */}
           </Typography>
         </Alert>
       )}

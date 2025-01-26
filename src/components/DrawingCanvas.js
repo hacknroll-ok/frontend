@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Button } from "@material-tailwind/react";
+import { useNavigate } from "react-router-dom";
 
 const DrawingCanvas = ({
   players,
@@ -18,7 +19,9 @@ const DrawingCanvas = ({
   const contextRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const myTurn = useRef(true);
-
+  const playersRef = useRef(null);
+  const navigate = useNavigate();
+  // useEffect(() => {}, [players, message]);
   useEffect(() => {
     // Initialize WebSocket connection
     if (webSocket.current == null) {
@@ -51,10 +54,12 @@ const DrawingCanvas = ({
         console.log("Parsed message:", message);
         console.log("type of parsed message", typeof message);
         console.log("message type:", message.type);
+        console.log("myTurn?", myTurn.current);
 
         if (Array.isArray(message)) {
           console.log("Players array received:", message);
           setPlayers(message); // Update the players array directly
+          playersRef.current = message;
         } else if (
           message.type === "newTurn"
           // ||
@@ -73,20 +78,26 @@ const DrawingCanvas = ({
           setRoundNumber(message.round);
           setSubject(message.drawingSubject);
           setSubmittedGuess(false);
-
+          console.log("players:", playersRef.current);
+          let storedPlayerId = parseInt(sessionStorage.getItem("id"), 10);
+          console.log("stored player id:", storedPlayerId);
+          let currentPlayerIndex = playersRef.current.findIndex(
+            (player) => player.id === storedPlayerId
+          );
           const isCurrentPlayerTurn =
-            message.playerDrawing ===
-            parseInt(sessionStorage.getItem("id"), 10);
+            message.playerDrawing === currentPlayerIndex;
+          console.log("current player index:", currentPlayerIndex);
+
+          //need set state and ref both hmm
           setIsMyTurn(isCurrentPlayerTurn);
           myTurn.current = isCurrentPlayerTurn;
 
           console.log(
             `Round ${message.round} started. Drawing subject: ${message.drawingSubject}.`
           );
-          console.log(`Is it my turn to draw? ${isCurrentPlayerTurn}`);
+          console.log(`Is it my turn to draw? ${myTurn.current}`);
         } else if (message.type === "drawing" && !myTurn.current) {
           // Render the drawing event on this client's canvas
-          console.log("myTurn?", myTurn.current);
           if (message.state === "ongoing") {
             contextRef.current.lineTo(message.x, message.y);
             contextRef.current.stroke();
@@ -100,6 +111,10 @@ const DrawingCanvas = ({
             const context = contextRef.current;
             context.clearRect(0, 0, canvas.width, canvas.height);
           }
+        } else if (message.type === "end") {
+          console.log("game has ended");
+          webSocket.current.close(1000, "game has ended");
+          navigate("/results", { state: { players: playersRef.current } });
         } else {
           console.warn("Unhandled message type or format:", message);
         }
